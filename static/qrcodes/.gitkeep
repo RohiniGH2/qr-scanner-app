@@ -1,0 +1,2 @@
+# This file ensures the static/qrcodes directory is created in git
+# QR code images will be generated here

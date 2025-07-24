@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ student.name }} - Student Profile</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .profile-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        .profile-photo {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border: 4px solid white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .info-card {
+            border: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .info-label {
+            font-weight: 600;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+        .info-value {
+            font-size: 1.1em;
+            color: #495057;
+        }
+        .status-badge {
+            font-size: 0.9em;
+            padding: 8px 15px;
+        }
+        @media (max-width: 768px) {
+            .profile-header {
+                text-align: center;
+            }
+            .profile-photo {
+                width: 100px;
+                height: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile-friendly navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-arrow-left me-2"></i>
+                Back to Dashboard
+            </a>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text">
+                    <i class="fas fa-mobile-alt me-1"></i>
+                    Mobile View
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4 mb-5">
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    <img src="{{ url_for('static', filename='photos/' + student.photo) }}" 
+                         alt="{{ student.name }}" 
+                         class="rounded-circle profile-photo"
+                         onerror="this.src='https://via.placeholder.com/120x120/6c757d/ffffff?text={{ student.name[0] }}'">
+                </div>
+                <div class="col">
+                    <h2 class="mb-1">{{ student.name }}</h2>
+                    <h5 class="mb-2">
+                        <span class="badge bg-light text-dark">{{ student.roll_number }}</span>
+                    </h5>
+                    <p class="mb-0">
+                        <i class="fas fa-graduation-cap me-2"></i>
+                        {{ student.class_year }} - {{ student.department }}
+                    </p>
+                    <p class="mb-0">
+                        <span class="badge status-badge bg-success">{{ student.status }}</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="info-card card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-address-book me-2"></i>
+                    Contact Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="info-label">Email Address</div>
+                        <div class="info-value">
+                            <i class="fas fa-envelope me-2 text-primary"></i>
+                            <a href="mailto:{{ student.email }}" class="text-decoration-none">{{ student.email }}</a>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="info-label">Date of Birth</div>
+                        <div class="info-value">
+                            <i class="fas fa-birthday-cake me-2 text-warning"></i>
+                            {{ student.date_of_birth }}
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 mb-3">
+                        <div class="info-label">Address</div>
+                        <div class="info-value">
+                            <i class="fas fa-map-marker-alt me-2 text-danger"></i>
+                            {{ student.address }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Guardian Information -->
+        <div class="info-card card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-user-friends me-2"></i>
+                    Guardian Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="info-label">Guardian Name</div>
+                        <div class="info-value">
+                            <i class="fas fa-user me-2 text-success"></i>
+                            {{ student.guardian_name }}
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="info-label">Guardian Phone</div>
+                        <div class="info-value">
+                            <i class="fas fa-phone me-2 text-info"></i>
+                            <a href="tel:{{ student.guardian_phone }}" class="text-decoration-none">{{ student.guardian_phone }}</a>
+                        </div>
+                    </div>
+                </div>
+                {% if student.emergency_contact %}
+                <div class="row">
+                    <div class="col-12 mb-3">
+                        <div class="info-label">Emergency Contact</div>
+                        <div class="info-value">
+                            <i class="fas fa-exclamation-triangle me-2 text-warning"></i>
+                            {{ student.emergency_contact }}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Academic Information -->
+        <div class="info-card card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-graduation-cap me-2"></i>
+                    Academic Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="info-label">Enrollment Date</div>
+                        <div class="info-value">
+                            <i class="fas fa-calendar-plus me-2 text-primary"></i>
+                            {{ student.enrollment_date }}
+                        </div>
+                    </div>
+                    {% if student.blood_group %}
+                    <div class="col-md-6 mb-3">
+                        <div class="info-label">Blood Group</div>
+                        <div class="info-value">
+                            <i class="fas fa-tint me-2 text-danger"></i>
+                            {{ student.blood_group }}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% if student.notes %}
+                <div class="row">
+                    <div class="col-12 mb-3">
+                        <div class="info-label">Additional Notes</div>
+                        <div class="info-value">
+                            <i class="fas fa-sticky-note me-2 text-warning"></i>
+                            {{ student.notes }}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Quick Actions (Mobile Optimized) -->
+        <div class="info-card card">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-bolt me-2"></i>
+                    Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-2">
+                    <div class="col-6">
+                        <a href="mailto:{{ student.email }}" class="btn btn-primary w-100">
+                            <i class="fas fa-envelope me-1"></i>
+                            Email
+                        </a>
+                    </div>
+                    <div class="col-6">
+                        <a href="tel:{{ student.guardian_phone }}" class="btn btn-success w-100">
+                            <i class="fas fa-phone me-1"></i>
+                            Call Guardian
+                        </a>
+                    </div>
+                    <div class="col-6">
+                        <a href="/edit_student/{{ student.roll_number }}" class="btn btn-warning w-100">
+                            <i class="fas fa-edit me-1"></i>
+                            Edit Student
+                        </a>
+                    </div>
+                    <div class="col-6">
+                        <button class="btn btn-info w-100" onclick="shareProfile()">
+                            <i class="fas fa-share-alt me-1"></i>
+                            Share
+                        </button>
+                    </div>
+                    <div class="col-6">
+                        <button class="btn btn-secondary w-100" onclick="window.print()">
+                            <i class="fas fa-print me-1"></i>
+                            Print
+                        </button>
+                    </div>
+                    <div class="col-6">
+                        <button class="btn btn-danger w-100" onclick="deleteStudent()">
+                            <i class="fas fa-trash me-1"></i>
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scan Info -->
+        <div class="alert alert-info mt-4">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-info-circle fa-2x me-3"></i>
+                <div>
+                    <h6 class="mb-1">Scanned Successfully!</h6>
+                    <small>This profile was accessed by scanning the QR code. You can bookmark this page or share the link with others on the same network.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function shareProfile() {
+            if (navigator.share) {
+                navigator.share({
+                    title: '{{ student.name }} - Student Profile',
+                    text: 'Student profile for {{ student.name }} ({{ student.roll_number }})',
+                    url: window.location.href
+                });
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                navigator.clipboard.writeText(window.location.href).then(function() {
+                    alert('Profile URL copied to clipboard!');
+                });
+            }
+        }
+
+        function deleteStudent() {
+            if (confirm('Are you sure you want to delete {{ student.name }} ({{ student.roll_number }})?')) {
+                window.location.href = '/delete_student/{{ student.roll_number }}';
+            }
+        }
+
+        // Add touch-friendly interactions for mobile
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add haptic feedback on button press (if supported)
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('click', function() {
+                    if (navigator.vibrate) {
+                        navigator.vibrate(50); // Subtle vibration
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

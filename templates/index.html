@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student QR Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .qr-code-img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+        }
+        .student-row:hover {
+            background-color: #f8f9fa;
+        }
+        .ip-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .table th {
+            background-color: #495057;
+            color: white;
+        }
+        .action-btn {
+            margin: 2px;
+        }
+        /* Fix logout button hover issue */
+        .btn-outline-light:hover {
+            background-color: #dc3545 !important;
+            border-color: #dc3545 !important;
+            color: white !important;
+        }
+        .btn-outline-light:focus, .btn-outline-light:active {
+            background-color: #dc3545 !important;
+            border-color: #dc3545 !important;
+            color: white !important;
+        }
+        
+        /* Dashboard Statistics Cards */
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: none;
+            overflow: hidden;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-card-body {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 24px;
+            color: white;
+        }
+        
+        .stat-card-primary .stat-icon { background: linear-gradient(45deg, #667eea, #764ba2); }
+        .stat-card-success .stat-icon { background: linear-gradient(45deg, #56ab2f, #a8e6cf); }
+        .stat-card-info .stat-icon { background: linear-gradient(45deg, #3494e6, #ec6ead); }
+        .stat-card-warning .stat-icon { background: linear-gradient(45deg, #ff9a9e, #fecfef); }
+        
+        .stat-content {
+            flex: 1;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 0;
+            line-height: 1;
+        }
+        
+        .stat-label {
+            color: #7f8c8d;
+            margin: 5px 0;
+            font-weight: 500;
+        }
+        
+        .stat-trend {
+            color: #27ae60;
+            font-size: 0.85rem;
+        }
+        
+        /* Quick Actions */
+        .quick-actions-card {
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+        }
+        
+        .quick-action-btn {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: inherit;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+        
+        .quick-action-btn:hover {
+            background: white;
+            color: inherit;
+            text-decoration: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
+        }
+        
+        .quick-action-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: white;
+            font-size: 18px;
+        }
+        
+        .quick-action-content h6 {
+            margin: 0 0 5px 0;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .quick-action-content p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #7f8c8d;
+        }
+        
+        /* System Status */
+        .system-status-card {
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f8f9fa;
+        }
+        
+        .status-item:last-child {
+            border-bottom: none;
+        }
+        
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 12px;
+            position: relative;
+        }
+        
+        .status-online {
+            background: #27ae60;
+            box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.2);
+        }
+        
+        .status-content h6 {
+            margin: 0;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .status-content small {
+            color: #7f8c8d;
+            font-size: 0.8rem;
+        }
+
+        /* Instruction Cards Styling */
+        .bg-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        }
+        
+        .instruction-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            border: none;
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .instruction-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+        
+        .instruction-header {
+            padding: 20px;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+        
+        .instruction-header h6 {
+            margin: 10px 0 0 0;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .instruction-body {
+            padding: 20px;
+        }
+        
+        .instruction-list {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 15px;
+        }
+        
+        .instruction-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f8f9fa;
+            position: relative;
+            padding-left: 20px;
+        }
+        
+        .instruction-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #27ae60;
+            font-weight: bold;
+        }
+        
+        .instruction-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .instruction-tip {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 3px solid #3498db;
+        }
+        
+        .instruction-tip small {
+            color: #7f8c8d;
+            font-style: normal;
+        }
+        
+        /* Feature Highlights */
+        .feature-highlight {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e9ecef;
+        }
+        
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: white;
+            font-size: 20px;
+        }
+        
+        .feature-content h6 {
+            margin: 0 0 8px 0;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        .feature-content p {
+            margin: 0;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        /* Network Setup Guide */
+        .network-guide {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .setup-step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .step-number {
+            width: 30px;
+            height: 30px;
+            background: #27ae60;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+            font-size: 0.9rem;
+        }
+        
+        .step-content {
+            flex: 1;
+            color: #2c3e50;
+            line-height: 1.5;
+        }
+        
+        /* Troubleshooting Section */
+        .troubleshooting-section {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            border: 2px solid #e9ecef;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .troubleshooting-section h6 {
+            color: #495057;
+            font-weight: 600;
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f8f9fa;
+        }
+        
+        .trouble-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #6c757d;
+            transition: all 0.2s ease;
+        }
+        
+        .trouble-item:hover {
+            background: #ffffff;
+            border-left-color: #007bff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .trouble-item h6 {
+            margin: 0 0 15px 0;
+            font-size: 1rem;
+            color: #343a40;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-align: left;
+            border: none;
+            padding: 0;
+        }
+        
+        .trouble-item h6 i {
+            font-size: 1.2rem;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .trouble-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .trouble-list li {
+            padding: 6px 0;
+            color: #495057;
+            font-size: 0.9rem;
+            position: relative;
+            padding-left: 20px;
+            line-height: 1.5;
+        }
+        
+        .trouble-list li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #6c757d;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+        
+        .trouble-item:hover .trouble-list li:before {
+            color: #007bff;
+        }
+        
+        /* Different colors for each trouble item */
+        .trouble-item:nth-child(2) {
+            border-left-color: #ffc107;
+        }
+        
+        .trouble-item:nth-child(2):hover {
+            border-left-color: #e0a800;
+        }
+        
+        .trouble-item:nth-child(3) {
+            border-left-color: #17a2b8;
+        }
+        
+        .trouble-item:nth-child(3):hover {
+            border-left-color: #138496;
+        }
+        
+        .trouble-item:nth-child(4) {
+            border-left-color: #28a745;
+        }
+        
+        .trouble-item:nth-child(4):hover {
+            border-left-color: #1e7e34;
+        }
+        
+        /* Responsive design for troubleshooting */
+        @media (max-width: 768px) {
+            .troubleshooting-section {
+                padding: 20px;
+            }
+            
+            .trouble-item {
+                margin-bottom: 15px;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-qrcode me-2"></i>
+                Student QR Dashboard
+            </a>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text me-3">
+                    <i class="fas fa-user me-1"></i>
+                    Welcome, {{ session.admin_full_name }}
+                </span>
+                <a class="nav-link btn btn-success text-white me-2" href="/add_student">
+                    <i class="fas fa-user-plus me-1"></i>
+                    Add Student
+                </a>
+                <a class="nav-link btn btn-outline-light" href="/logout">
+                    <i class="fas fa-sign-out-alt me-1"></i>
+                    Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{% if category == 'error' %}danger{% else %}{{ category }}{% endif %} alert-dismissible fade show" role="alert">
+                        <i class="fas fa-{% if category == 'error' %}exclamation-circle{% elif category == 'success' %}check-circle{% elif category == 'info' %}info-circle{% else %}exclamation-triangle{% endif %} me-2"></i>
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- LAN IP Information -->
+        <div class="ip-info">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h5><i class="fas fa-network-wired me-2"></i>LAN Access Information</h5>
+                    <p class="mb-0">
+                        <strong>Server running on:</strong> http://{{ local_ip }}:8080<br>
+                        <small>Other devices on your network can access this dashboard using the above URL</small>
+                    </p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <button class="btn btn-light" onclick="copyToClipboard('http://{{ local_ip }}:8080')">
+                        <i class="fas fa-copy me-1"></i>Copy URL
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="stat-card stat-card-primary">
+                    <div class="stat-card-body">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number">{{ students|length }}</h3>
+                            <p class="stat-label">Total Students</p>
+                            <small class="stat-trend">
+                                <i class="fas fa-arrow-up"></i>
+                                Active Records
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="stat-card stat-card-success">
+                    <div class="stat-card-body">
+                        <div class="stat-icon">
+                            <i class="fas fa-qrcode"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number">{{ students|length }}</h3>
+                            <p class="stat-label">QR Codes Generated</p>
+                            <small class="stat-trend">
+                                <i class="fas fa-check-circle"></i>
+                                All Active
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="stat-card stat-card-info">
+                    <div class="stat-card-body">
+                        <div class="stat-icon">
+                            <i class="fas fa-wifi"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number">{{ local_ip.split('.')[3] }}</h3>
+                            <p class="stat-label">Network IP</p>
+                            <small class="stat-trend">
+                                <i class="fas fa-signal"></i>
+                                Connected
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="stat-card stat-card-warning">
+                    <div class="stat-card-body">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="uptime">0</h3>
+                            <p class="stat-label">Server Uptime</p>
+                            <small class="stat-trend">
+                                <i class="fas fa-play-circle"></i>
+                                <span id="uptime-text">Online</span>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions Panel -->
+        <div class="row mb-4">
+            <div class="col-lg-8">
+                <div class="card quick-actions-card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-bolt me-2"></i>
+                            Quick Actions
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <a href="/add_student" class="quick-action-btn">
+                                    <div class="quick-action-icon bg-success">
+                                        <i class="fas fa-user-plus"></i>
+                                    </div>
+                                    <div class="quick-action-content">
+                                        <h6>Add New Student</h6>
+                                        <p>Register a new student with QR code</p>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <a href="/network-info" class="quick-action-btn">
+                                    <div class="quick-action-icon bg-info">
+                                        <i class="fas fa-network-wired"></i>
+                                    </div>
+                                    <div class="quick-action-content">
+                                        <h6>Network Diagnostics</h6>
+                                        <p>Check connection status</p>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <button class="quick-action-btn" onclick="downloadAllQRCodes()">
+                                    <div class="quick-action-icon bg-primary">
+                                        <i class="fas fa-download"></i>
+                                    </div>
+                                    <div class="quick-action-content">
+                                        <h6>Export QR Codes</h6>
+                                        <p>Download all QR codes</p>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="card system-status-card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-heartbeat me-2"></i>
+                            System Status
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="status-item">
+                            <div class="status-indicator status-online"></div>
+                            <div class="status-content">
+                                <h6>Flask Server</h6>
+                                <small>Running on port 8080</small>
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-indicator status-online"></div>
+                            <div class="status-content">
+                                <h6>Database</h6>
+                                <small>JSON files operational</small>
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-indicator status-online"></div>
+                            <div class="status-content">
+                                <h6>QR Generation</h6>
+                                <small>Service active</small>
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-indicator status-online"></div>
+                            <div class="status-content">
+                                <h6>Network Access</h6>
+                                <small>LAN connectivity OK</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Students Table -->
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="fas fa-users me-2"></i>
+                    Students Directory
+                    <span class="badge bg-success ms-2">{{ students|length }} Students</span>
+                </h4>
+            </div>
+            <div class="card-body">
+                {% if students %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Roll Number</th>
+                                <th>Class/Year</th>
+                                <th>QR Code</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for roll_number, student in students.items() %}
+                            <tr class="student-row">
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="{{ url_for('static', filename='photos/' + student.photo) }}" 
+                                             alt="{{ student.name }}" 
+                                             class="rounded-circle me-2" 
+                                             width="40" height="40"
+                                             onerror="this.src='https://via.placeholder.com/40x40/6c757d/ffffff?text=?'">
+                                        <strong>{{ student.name }}</strong>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">{{ student.roll_number }}</span>
+                                </td>
+                                <td>{{ student.class_year }} - {{ student.department }}</td>
+                                <td>
+                                    <img src="{{ url_for('static', filename=student.qr_code[7:]) }}" 
+                                         alt="QR Code for {{ student.name }}" 
+                                         class="qr-code-img border"
+                                         onclick="showQRModal('{{ student.name }}', '{{ student.roll_number }}', '{{ url_for('static', filename=student.qr_code[7:]) }}')">
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary action-btn" 
+                                            onclick="viewStudent('{{ student.roll_number }}')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-warning action-btn" 
+                                            onclick="editStudent('{{ student.roll_number }}')">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-info action-btn" 
+                                            onclick="showQRModal('{{ student.name }}', '{{ student.roll_number }}', '{{ url_for('static', filename=student.qr_code[7:]) }}')">
+                                        <i class="fas fa-qrcode"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger action-btn" 
+                                            onclick="deleteStudent('{{ student.roll_number }}', '{{ student.name }}')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                    <h5>No Students Added Yet</h5>
+                    <p class="text-muted">Start by adding your first student to generate QR codes</p>
+                    <a href="/add_student" class="btn btn-primary">
+                        <i class="fas fa-user-plus me-1"></i>
+                        Add First Student
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Comprehensive Instructions -->
+        <div class="card mt-4">
+            <div class="card-header bg-gradient">
+                <h5 class="mb-0 text-white">
+                    <i class="fas fa-graduation-cap me-2"></i>
+                    Complete User Guide & Instructions
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- Main Steps -->
+                <div class="row mb-4">
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="instruction-card h-100">
+                            <div class="instruction-header bg-success">
+                                <i class="fas fa-user-plus fa-2x"></i>
+                                <h6>Step 1: Student Registration</h6>
+                            </div>
+                            <div class="instruction-body">
+                                <ul class="instruction-list">
+                                    <li>Click <strong>"Add Student"</strong> button</li>
+                                    <li>Fill in student details (name, roll number, class)</li>
+                                    <li>Upload student photo (optional but recommended)</li>
+                                    <li>Submit to generate unique QR code automatically</li>
+                                </ul>
+                                <div class="instruction-tip">
+                                    <i class="fas fa-lightbulb me-1"></i>
+                                    <small>Tip: Use clear, recent photos for better identification</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="instruction-card h-100">
+                            <div class="instruction-header bg-primary">
+                                <i class="fas fa-qrcode fa-2x"></i>
+                                <h6>Step 2: QR Code Management</h6>
+                            </div>
+                            <div class="instruction-body">
+                                <ul class="instruction-list">
+                                    <li>Each student gets a unique QR code</li>
+                                    <li>Click QR code image to view in modal</li>
+                                    <li>Download individual or all QR codes</li>
+                                    <li>Print QR codes for physical distribution</li>
+                                </ul>
+                                <div class="instruction-tip">
+                                    <i class="fas fa-lightbulb me-1"></i>
+                                    <small>Tip: QR codes link directly to student profiles</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="instruction-card h-100">
+                            <div class="instruction-header bg-warning">
+                                <i class="fas fa-mobile-alt fa-2x"></i>
+                                <h6>Step 3: Access & Scanning</h6>
+                            </div>
+                            <div class="instruction-body">
+                                <ul class="instruction-list">
+                                    <li>Share server URL with network devices</li>
+                                    <li>Scan QR codes using phone camera</li>
+                                    <li>View detailed student information instantly</li>
+                                    <li>Access from any device on same network</li>
+                                </ul>
+                                <div class="instruction-tip">
+                                    <i class="fas fa-lightbulb me-1"></i>
+                                    <small>Tip: Works on phones, tablets, and computers</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advanced Features -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h6 class="text-primary mb-3">
+                            <i class="fas fa-star me-2"></i>
+                            Advanced Features
+                        </h6>
+                    </div>
+                    <div class="col-lg-6 col-md-6 mb-3">
+                        <div class="feature-highlight">
+                            <div class="feature-icon bg-info">
+                                <i class="fas fa-network-wired"></i>
+                            </div>
+                            <div class="feature-content">
+                                <h6>Network Diagnostics</h6>
+                                <p>Check connection status, test network connectivity, and troubleshoot access issues from the Quick Actions panel.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 mb-3">
+                        <div class="feature-highlight">
+                            <div class="feature-icon bg-success">
+                                <i class="fas fa-download"></i>
+                            </div>
+                            <div class="feature-content">
+                                <h6>Bulk Operations</h6>
+                                <p>Export all QR codes at once, manage multiple students efficiently, and perform batch operations on student data.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Network Setup Guide -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="network-guide">
+                            <h6 class="text-success mb-3">
+                                <i class="fas fa-wifi me-2"></i>
+                                Network Setup Guide
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="setup-step">
+                                        <span class="step-number">1</span>
+                                        <div class="step-content">
+                                            <strong>Ensure Same Network:</strong> All devices must be connected to the same WiFi or LAN network as this server.
+                                        </div>
+                                    </div>
+                                    <div class="setup-step">
+                                        <span class="step-number">2</span>
+                                        <div class="step-content">
+                                            <strong>Share URL:</strong> Copy the server URL ({{ local_ip }}:8080) and share with other devices.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="setup-step">
+                                        <span class="step-number">3</span>
+                                        <div class="step-content">
+                                            <strong>Test Connection:</strong> Use the "Network Diagnostics" feature to verify connectivity.
+                                        </div>
+                                    </div>
+                                    <div class="setup-step">
+                                        <span class="step-number">4</span>
+                                        <div class="step-content">
+                                            <strong>Scan QR Codes:</strong> Use any camera app to scan QR codes and access student profiles.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Troubleshooting -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="troubleshooting-section">
+                            <h6 class="text-danger mb-3">
+                                <i class="fas fa-tools me-2"></i>
+                                Troubleshooting Common Issues
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="trouble-item">
+                                        <h6><i class="fas fa-exclamation-triangle text-warning me-1"></i>Cannot Access from Mobile</h6>
+                                        <ul class="trouble-list">
+                                            <li>Check if devices are on same network</li>
+                                            <li>Try disabling firewall temporarily</li>
+                                            <li>Use "Network Diagnostics" tool</li>
+                                            <li>Ensure server is running on port 8080</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="trouble-item">
+                                        <h6><i class="fas fa-qrcode text-info me-1"></i>QR Code Not Working</h6>
+                                        <ul class="trouble-list">
+                                            <li>Ensure good lighting when scanning</li>
+                                            <li>Hold camera steady and at proper distance</li>
+                                            <li>Try different QR scanner apps</li>
+                                            <li>Check if URL in QR code is correct</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="trouble-item">
+                                        <h6><i class="fas fa-image text-success me-1"></i>Photo Upload Issues</h6>
+                                        <ul class="trouble-list">
+                                            <li>Use JPG, PNG, or GIF formats</li>
+                                            <li>Keep file size under 5MB</li>
+                                            <li>Ensure clear, well-lit photos</li>
+                                            <li>Try refreshing if upload fails</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- QR Code Modal -->
+    <div class="modal fade" id="qrModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-qrcode me-2"></i>
+                        <span id="modalStudentName"></span> - QR Code
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="modalQRImage" src="" alt="QR Code" class="img-fluid mb-3" style="max-width: 300px;">
+                    <p><strong>Roll Number:</strong> <span id="modalRollNumber"></span></p>
+                    <p class="text-muted">
+                        <i class="fas fa-mobile-alt me-1"></i>
+                        Scan this code with any device on your network
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="downloadQR()">
+                        <i class="fas fa-download me-1"></i>Download
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function viewStudent(rollNumber) {
+            window.open(`/student/${rollNumber}`, '_blank');
+        }
+
+        function editStudent(rollNumber) {
+            window.location.href = `/edit_student/${rollNumber}`;
+        }
+
+        function showQRModal(studentName, rollNumber, qrImageSrc) {
+            document.getElementById('modalStudentName').textContent = studentName;
+            document.getElementById('modalRollNumber').textContent = rollNumber;
+            document.getElementById('modalQRImage').src = qrImageSrc;
+            
+            const modal = new bootstrap.Modal(document.getElementById('qrModal'));
+            modal.show();
+        }
+
+        function downloadQR() {
+            const img = document.getElementById('modalQRImage');
+            const rollNumber = document.getElementById('modalRollNumber').textContent;
+            
+            const link = document.createElement('a');
+            link.download = `${rollNumber}_QRCode.png`;
+            link.href = img.src;
+            link.click();
+        }
+
+        function deleteStudent(rollNumber, studentName) {
+            if (confirm(`Are you sure you want to delete ${studentName} (${rollNumber})?`)) {
+                window.location.href = `/delete_student/${rollNumber}`;
+            }
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                alert('URL copied to clipboard!');
+            });
+        }
+
+        // Uptime counter
+        let startTime = new Date();
+        function updateUptime() {
+            const now = new Date();
+            const uptime = Math.floor((now - startTime) / 1000);
+            const hours = Math.floor(uptime / 3600);
+            const minutes = Math.floor((uptime % 3600) / 60);
+            const seconds = uptime % 60;
+            
+            document.getElementById('uptime').textContent = hours > 0 ? `${hours}h` : `${minutes}m`;
+            document.getElementById('uptime-text').textContent = hours > 0 ? `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}` : `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        // Update uptime every second
+        setInterval(updateUptime, 1000);
+        updateUptime(); // Initial call
+
+        // Download all QR codes function
+        function downloadAllQRCodes() {
+            // Create a temporary link for each QR code and trigger download
+            const qrImages = document.querySelectorAll('img[src*="qrcodes"]');
+            if (qrImages.length === 0) {
+                alert('No QR codes found to download!');
+                return;
+            }
+            
+            qrImages.forEach((img, index) => {
+                setTimeout(() => {
+                    const link = document.createElement('a');
+                    link.download = `QRCode_${index + 1}.png`;
+                    link.href = img.src;
+                    link.click();
+                }, index * 500); // Delay between downloads
+            });
+            
+            alert(`Starting download of ${qrImages.length} QR codes...`);
+        }
+    </script>
+
+    <!-- Professional Footer -->
+    <footer class="footer mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <h5 class="footer-title">
+                        <i class="fas fa-qrcode me-2"></i>
+                        QR Scanner System
+                    </h5>
+                    <p class="footer-text">
+                        A comprehensive student management system with QR code integration for seamless identification and data access across your local network.
+                    </p>
+                    <div class="footer-stats">
+                        <small class="text-muted">
+                            <i class="fas fa-users me-1"></i>
+                            {{ students|length }} Students Registered
+                        </small>
+                    </div>
+                </div>
+                
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6 class="footer-subtitle">Quick Links</h6>
+                    <ul class="footer-links">
+                        <li><a href="/dashboard"><i class="fas fa-tachometer-alt me-1"></i>Dashboard</a></li>
+                        <li><a href="/add_student"><i class="fas fa-user-plus me-1"></i>Add Student</a></li>
+                        <li><a href="/network-info"><i class="fas fa-network-wired me-1"></i>Network Info</a></li>
+                        <li><a href="/test"><i class="fas fa-plug me-1"></i>Test Connection</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h6 class="footer-subtitle">System Info</h6>
+                    <div class="system-info">
+                        <p class="mb-2">
+                            <i class="fas fa-server me-2"></i>
+                            <small>Server: {{ local_ip }}:8080</small>
+                        </p>
+                        <p class="mb-2">
+                            <i class="fas fa-shield-alt me-2"></i>
+                            <small>Admin: {{ session.admin_full_name }}</small>
+                        </p>
+                        <p class="mb-2">
+                            <i class="fas fa-clock me-2"></i>
+                            <small>Online since server start</small>
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h6 class="footer-subtitle">Features</h6>
+                    <div class="features-list">
+                        <div class="feature-item">
+                            <i class="fas fa-qrcode text-primary me-2"></i>
+                            <small>QR Code Generation</small>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-mobile-alt text-success me-2"></i>
+                            <small>Mobile Responsive</small>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-wifi text-info me-2"></i>
+                            <small>LAN Access</small>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-lock text-warning me-2"></i>
+                            <small>Secure Authentication</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <hr class="footer-divider">
+            
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="footer-copyright mb-0">
+                        <i class="fas fa-copyright me-1"></i>
+                        2025 QR Scanner System. Built with Flask & Bootstrap.
+                    </p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="footer-actions">
+                        <button class="btn btn-outline-light btn-sm me-2" onclick="copyToClipboard('http://{{ local_ip }}:8080')">
+                            <i class="fas fa-share-alt me-1"></i>Share URL
+                        </button>
+                        <a href="/logout" class="btn btn-outline-danger btn-sm">
+                            <i class="fas fa-sign-out-alt me-1"></i>Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <style>
+        .footer {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: #ecf0f1;
+            padding: 40px 0 20px 0;
+            margin-top: auto;
+        }
+        
+        .footer-title {
+            color: #3498db;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .footer-subtitle {
+            color: #bdc3c7;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .footer-text {
+            color: #bdc3c7;
+            line-height: 1.6;
+            font-size: 0.9rem;
+        }
+        
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .footer-links li {
+            margin-bottom: 8px;
+        }
+        
+        .footer-links a {
+            color: #bdc3c7;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: #3498db;
+        }
+        
+        .system-info p, .features-list .feature-item {
+            color: #bdc3c7;
+            margin-bottom: 8px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .footer-divider {
+            border-color: #485563;
+            margin: 30px 0 20px 0;
+        }
+        
+        .footer-copyright {
+            color: #95a5a6;
+            font-size: 0.85rem;
+        }
+        
+        .footer-actions .btn {
+            border-radius: 20px;
+            font-size: 0.8rem;
+            padding: 5px 15px;
+        }
+        
+        .footer-stats {
+            background: rgba(52, 152, 219, 0.1);
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-top: 10px;
+            border-left: 3px solid #3498db;
+        }
+        
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        .container.mt-4 {
+            flex: 1;
+        }
+        
+        @media (max-width: 768px) {
+            .footer {
+                padding: 30px 0 15px 0;
+            }
+            
+            .footer-actions {
+                margin-top: 15px;
+                text-align: center !important;
+            }
+        }
+    </style>
+</body>
+</html>

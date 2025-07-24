@@ -1,0 +1,72 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Flask
+instance/
+.webassets-cache
+
+# Environment variables
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+
+# Local data files (optional - remove if you want to keep data in git)
+students.json
+admins.json
+
+# Generated QR codes and photos (but keep the folders)
+static/qrcodes/*.png
+static/photos/*.jpg
+static/photos/*.jpeg
+static/photos/*.png
+
+# Test files (local development only)
+test_connection.py
+add_firewall_rule.ps1
+diagnose_network.ps1
+fix_firewall.ps1
